@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Пансионаты — София и Вита</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Commissioner:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF1EE;
+  --surface:#FFFFFF;
+  --surface-2:#F5F7F4;
+  --ink:#17201D;
+  --muted:#60706A;
+  --line:#DBE2DC;
+  --sofia:#2E6F6A;
+  --sofia-soft:#DDECE9;
+  --vita:#8A4B6B;
+  --vita-soft:#F0E1E9;
+  --alert:#AE4127;
+  --alert-soft:#F7E2DC;
+  --warn:#8A6A18;
+  --warn-soft:#F6EED5;
+  --ok:#2F6B3A;
+  --shadow:0 1px 2px rgba(23,32,29,.06), 0 8px 24px rgba(23,32,29,.05);
+  --r:12px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121815;
+    --surface:#1A211E;
+    --surface-2:#212926;
+    --ink:#E7EDE9;
+    --muted:#95A49D;
+    --line:#2C3531;
+    --sofia:#6FBDB4;
+    --sofia-soft:#1E3330;
+    --vita:#CF92AF;
+    --vita-soft:#33222B;
+    --alert:#E38D74;
+    --alert-soft:#3A241E;
+    --warn:#D9B85E;
+    --warn-soft:#332B14;
+    --ok:#7DBE8A;
+    --shadow:0 1px 2px rgba(0,0,0,.35), 0 10px 28px rgba(0,0,0,.28);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121815; --surface:#1A211E; --surface-2:#212926; --ink:#E7EDE9; --muted:#95A49D;
+  --line:#2C3531; --sofia:#6FBDB4; --sofia-soft:#1E3330; --vita:#CF92AF; --vita-soft:#33222B;
+  --alert:#E38D74; --alert-soft:#3A241E; --warn:#D9B85E; --warn-soft:#332B14; --ok:#7DBE8A;
+  --shadow:0 1px 2px rgba(0,0,0,.35), 0 10px 28px rgba(0,0,0,.28);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+html{overflow-x:hidden}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:"Commissioner", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size:15px; line-height:1.45; font-variant-numeric:tabular-nums;
+  -webkit-font-smoothing:antialiased;
+}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--sofia); outline-offset:2px; border-radius:6px}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+.wrap{max-width:1040px;margin:0 auto;padding:18px 16px 80px}
+
+/* header */
+header.top{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+.brand h1{margin:0;font-size:21px;font-weight:600;letter-spacing:-.01em}
+.brand p{margin:2px 0 0;color:var(--muted);font-size:13px}
+.houses{display:flex;gap:8px;margin-left:auto;flex-wrap:wrap}
+.house-pill{display:flex;align-items:baseline;gap:7px;background:var(--surface);border:1px solid var(--line);
+  border-radius:999px;padding:6px 14px 6px 11px;box-shadow:var(--shadow)}
+.house-pill .dot{width:8px;height:8px;border-radius:50%;align-self:center}
+.house-pill b{font-size:16px;font-weight:600}
+.house-pill span{font-size:13px;color:var(--muted)}
+
+/* tabs */
+nav.tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:999px;
+  padding:4px;margin-bottom:18px;width:fit-content;max-width:100%;overflow-x:auto;box-shadow:var(--shadow)}
+nav.tabs button{border:0;background:transparent;color:var(--muted);padding:8px 16px;border-radius:999px;
+  white-space:nowrap;font-weight:500;display:flex;align-items:center;gap:7px}
+nav.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.badge{min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:var(--alert);color:#fff;
+  font-size:11px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;line-height:1}
+nav.tabs button[aria-selected="true"] .badge{background:var(--bg);color:var(--alert)}
+
+/* blocks */
+section.block{margin-bottom:26px}
+.block-head{display:flex;align-items:center;gap:10px;margin:0 0 10px;padding:0 2px}
+.block-head h2{margin:0;font-size:14px;font-weight:600;color:var(--muted);letter-spacing:.01em}
+.block-head .count{color:var(--muted);font-size:13px}
+.block-head .sp{margin-left:auto}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+.row{display:flex;gap:12px;align-items:center;padding:12px 14px;border-top:1px solid var(--line);flex-wrap:wrap}
+.row:first-child{border-top:0}
+.row .main{flex:1 1 200px;min-width:0}
+.row .name{font-weight:600;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.row .sub{color:var(--muted);font-size:13px;margin-top:2px;overflow-wrap:anywhere}
+.row.house-sofia{border-left:3px solid var(--sofia)}
+.row.house-vita{border-left:3px solid var(--vita)}
+.acts{display:flex;gap:6px;flex-wrap:wrap}
+
+.tag{font-size:12px;font-weight:500;padding:2px 9px;border-radius:999px;background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
+.tag.sofia{background:var(--sofia-soft);color:var(--sofia);border-color:transparent}
+.tag.vita{background:var(--vita-soft);color:var(--vita);border-color:transparent}
+.tag.alert{background:var(--alert-soft);color:var(--alert);border-color:transparent}
+.tag.warn{background:var(--warn-soft);color:var(--warn);border-color:transparent}
+.tag.ok{background:var(--sofia-soft);color:var(--ok);border-color:transparent}
+
+.btn{border:1px solid var(--line);background:var(--surface-2);color:var(--ink);padding:7px 13px;border-radius:9px;font-size:13px;font-weight:500}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn.ghost{background:transparent}
+.btn.danger{color:var(--alert)}
+.btn.sm{padding:5px 10px;font-size:12.5px}
+
+.empty{padding:26px 16px;text-align:center;color:var(--muted);font-size:14px}
+.empty b{display:block;color:var(--ink);font-weight:600;margin-bottom:3px}
+
+/* forms */
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.field label{font-size:12.5px;color:var(--muted);font-weight:500}
+input[type=text],input[type=date],input[type=time],input[type=number],input[type=tel],select,textarea{
+  background:var(--surface-2);border:1px solid var(--line);border-radius:9px;padding:9px 11px;width:100%}
+textarea{resize:vertical;min-height:62px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--surface-2);padding:6px 12px;border-radius:999px;font-size:13px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+.search{flex:1 1 180px;max-width:280px}
+
+.gate{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px;z-index:50}
+.gate-box{background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:26px;width:100%;max-width:360px}
+.gate-box h1{margin:0;font-size:22px;font-weight:600}
+.gate-box p{margin:3px 0 20px;color:var(--muted);font-size:13px}
+.gate-err{background:var(--alert-soft);color:var(--alert);border-radius:9px;padding:9px 11px;font-size:13px;margin-bottom:12px}
+dialog{border:0;padding:0;background:transparent;max-width:min(560px,94vw);width:100%}
+dialog::backdrop{background:rgba(10,16,14,.5)}
+.sheet{background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);
+  padding:20px;max-height:86vh;overflow:auto}
+.sheet h3{margin:0 0 14px;font-size:18px;font-weight:600}
+.sheet-foot{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap}
+.sheet-foot .left{margin-right:auto}
+
+.status-line{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12.5px;padding:10px 2px 0}
+.dot-live{width:7px;height:7px;border-radius:50%;background:var(--ok)}
+.dot-local{background:var(--warn)}
+
+.money{font-weight:600;white-space:nowrap}
+.sum-line{display:flex;gap:16px;flex-wrap:wrap;color:var(--muted);font-size:13px;padding:2px 2px 12px}
+.sum-line b{color:var(--ink)}
+@media (max-width:560px){
+  .grid2{grid-template-columns:1fr}
+  .houses{width:100%;margin-left:0}
+  .row .acts{width:100%}
+}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+</head>
+<body>
+<div id="gate" class="gate">
+  <form class="gate-box" id="gate-form">
+    <h1>Пансионаты</h1>
+    <p>София и Вита — вход для персонала</p>
+    <div class="field"><label for="g-mail">Почта</label><input id="g-mail" type="email" autocomplete="username" required></div>
+    <div class="field"><label for="g-pass">Пароль</label><input id="g-pass" type="password" autocomplete="current-password" required></div>
+    <div class="gate-err" id="g-err" hidden></div>
+    <button class="btn primary" style="width:100%;padding:11px" type="submit" id="g-btn">Войти</button>
+  </form>
+</div>
+<div id="app" hidden>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>Пансионаты</h1>
+      <p id="today-label"></p>
+    </div>
+    <div class="houses" id="houses"></div>
+  </header>
+
+  <nav class="tabs" role="tablist" id="tabs">
+    <button role="tab" data-tab="today" aria-selected="true">Сегодня <span class="badge" id="tab-badge" hidden>0</span></button>
+    <button role="tab" data-tab="leads" aria-selected="false">Лиды</button>
+    <button role="tab" data-tab="people" aria-selected="false">Жильцы</button>
+  </nav>
+
+  <main id="view"></main>
+  <div class="status-line"><span class="dot-live" id="store-dot"></span><span id="store-note">Подключение…</span><button class="btn sm ghost" data-act="logout" style="margin-left:auto">Выйти</button></div>
+</div>
+
+</div>
+<dialog id="modal"><div class="sheet" id="modal-body"></div></dialog>
+<dialog id="alarm"><div class="sheet" id="alarm-body"></div></dialog>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------- helpers ---------- */
+const $ = (s,r)=> (r||document).querySelector(s);
+const esc = s => String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const uid = () => (Date.now().toString(36)+Math.random().toString(36).slice(2,8));
+const MONTHS=["янв","фев","мар","апр","мая","июн","июл","авг","сен","окт","ноя","дек"];
+const pad=n=>String(n).padStart(2,"0");
+function todayISO(){const d=new Date();return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());}
+function isoPlus(days){const d=new Date();d.setDate(d.getDate()+days);return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());}
+function fmt(iso){ if(!iso) return "—"; const p=iso.split("-"); if(p.length<3) return iso;
+  return Number(p[2])+" "+MONTHS[Number(p[1])-1]; }
+function fmtFull(iso){ if(!iso) return "—"; const p=iso.split("-"); return Number(p[2])+" "+MONTHS[Number(p[1])-1]+" "+p[0]; }
+function days(iso){ if(!iso) return null;
+  const a=new Date(todayISO()+"T00:00:00"), b=new Date(iso+"T00:00:00");
+  return Math.round((b-a)/86400000); }
+function addMonths(iso,n){
+  const p=iso.split("-").map(Number); const day=p[2];
+  const d=new Date(p[0],p[1]-1+n,1);
+  const last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();
+  d.setDate(Math.min(day,last));
+  return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+}
+function dueWord(n){
+  if(n===null) return "";
+  if(n<0) return "просрочено "+Math.abs(n)+" "+plural(Math.abs(n),["день","дня","дней"]);
+  if(n===0) return "сегодня";
+  if(n===1) return "завтра";
+  return "через "+n+" "+plural(n,["день","дня","дней"]);
+}
+function plural(n,f){const m=n%100; if(m>=11&&m<=14)return f[2]; const k=n%10; return k===1?f[0]:(k>=2&&k<=4?f[1]:f[2]);}
+function money(v){ return Math.round(Number(v)||0).toLocaleString("ru-RU"); }
+function addDays(iso,n){ const d=new Date((iso||todayISO())+"T00:00:00"); d.setDate(d.getDate()+n);
+  return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()); }
+function feeOf(r){ return Number(r.fee!=null?r.fee:(Number(r.rate)||0)*30)||0; }
+function nextPayOf(r){ return r.nextPay||r.paidUntil||""; }
+function balance(r){ const pu=nextPayOf(r); return pu?days(pu):null; }
+function warnOf(r){ const n=Number(r.warnDays); return n>0?n:3; }
+function balText(r){
+  const b=balance(r); if(b===null) return "дата оплаты не задана";
+  if(b<0) return "просрочено "+Math.abs(b)+" "+plural(Math.abs(b),["день","дня","дней"]);
+  if(b===0) return "оплата сегодня";
+  if(b===1) return "оплата завтра";
+  return "оплата через "+b+" "+plural(b,["день","дня","дней"]);
+}
+function balCls(r){ const b=balance(r); if(b===null) return ""; if(b<0) return "alert"; if(b<=warnOf(r)) return "warn"; return ""; }
+
+const HOUSES={sofia:{name:"София",cls:"sofia"},vita:{name:"Вита",cls:"vita"}};
+const LEAD_ST={
+  new:{l:"Новый",cls:""},
+  target:{l:"Целевой",cls:"ok"},
+  callback:{l:"Перезвонить",cls:"warn"},
+  nontarget:{l:"Нецелевой",cls:""},
+  moved:{l:"Заехал",cls:"ok"},
+  lost:{l:"Отказ",cls:""}
+};
+
+/* ---------- state ---------- */
+const state={tab:"today",house:"sofia",leadFilter:"all",q:"",residents:[],leads:[],mode:"local",ready:false};
+let db=null, alarmShown=false;
+
+/* ---------- store: Supabase ---------- */
+const SUPA_URL="https://xotgiocenualytzuebnc.supabase.co";
+const SUPA_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhvdGdpb2NlbnVhbHl0enVlYm5jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk2NjkwMjYsImV4cCI6MjEwNTI0NTAyNn0.DTpyr4cpqxeDwCpcwOghVjz9CtOI5AxoTjoFDH_mzJA";
+const sb = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+
+const COLS={
+  residents:["id","name","house","room","contact","contactPhone","fee","warnDays","since","nextPay","lastPaid","note","archived","history"],
+  leads:["id","name","phone","source","status","remind","remindTime","note","created"]
+};
+const DATES={residents:["since","nextPay","lastPaid"], leads:["remind"]};
+function clean(coll,obj){
+  const out={};
+  COLS[coll].forEach(k=>{ if(obj[k]!==undefined) out[k]=obj[k]; });
+  DATES[coll].forEach(k=>{ if(out[k]==="" || out[k]===undefined) out[k]=null; });
+  if(coll==="residents"){ out.fee=Number(out.fee)||0; out.warnDays=Number(out.warnDays)||3; out.archived=!!out.archived; out.history=out.history||[]; }
+  return out;
+}
+function note(t){ $("#store-note").textContent=t; }
+
+async function loadAll(){
+  const [r,l]=await Promise.all([
+    sb.from("residents").select("*"),
+    sb.from("leads").select("*")
+  ]);
+  if(r.error){ note("Ошибка загрузки жильцов: "+r.error.message); return; }
+  if(l.error){ note("Ошибка загрузки лидов: "+l.error.message); return; }
+  state.residents=r.data||[]; state.leads=l.data||[];
+  state.ready=true; render(); maybeAlarm();
+}
+
+function listen(){
+  sb.channel("pans")
+    .on("postgres_changes",{event:"*",schema:"public",table:"residents"},()=>loadAll())
+    .on("postgres_changes",{event:"*",schema:"public",table:"leads"},()=>loadAll())
+    .subscribe();
+}
+
+async function initStore(){
+  note("Загрузка…");
+  await loadAll();
+  listen();
+  const { data:{ user } } = await sb.auth.getUser();
+  note("Вход: "+(user? user.email : "—")+" · данные синхронизируются между устройствами");
+}
+
+async function saveDoc(coll,obj){
+  const list = coll==="residents"?state.residents:state.leads;
+  const i=list.findIndex(x=>x.id===obj.id);
+  if(i>=0) list[i]=obj; else list.push(obj);
+  render();
+  const { error } = await sb.from(coll).upsert(clean(coll,obj));
+  if(error) note("Не сохранилось: "+error.message); else note("Сохранено "+new Date().toLocaleTimeString("ru-RU").slice(0,5));
+}
+async function delDoc(coll,id){
+  const list = coll==="residents"?state.residents:state.leads;
+  const i=list.findIndex(x=>x.id===id); if(i>=0) list.splice(i,1);
+  render();
+  const { error } = await sb.from(coll).delete().eq("id",id);
+  if(error) note("Не удалилось: "+error.message);
+}
+
+/* ---------- auth ---------- */
+const gate=$("#gate"), app=$("#app");
+function showApp(){ gate.style.display="none"; app.hidden=false; initStore(); }
+function showGate(msg){ gate.style.display="flex"; app.hidden=true;
+  if(msg){ const e=$("#g-err"); e.hidden=false; e.textContent=msg; } }
+
+$("#gate-form").addEventListener("submit", async e=>{
+  e.preventDefault();
+  const btn=$("#g-btn"), err=$("#g-err");
+  btn.disabled=true; btn.textContent="Входим…"; err.hidden=true;
+  const { error } = await sb.auth.signInWithPassword({
+    email:$("#g-mail").value.trim(), password:$("#g-pass").value
+  });
+  btn.disabled=false; btn.textContent="Войти";
+  if(error){ err.hidden=false;
+    err.textContent = error.message==="Invalid login credentials" ? "Неверная почта или пароль" : error.message;
+    return; }
+  showApp();
+});
+
+sb.auth.getSession().then(({data})=>{ if(data.session) showApp(); else gate.style.display="flex"; });
+
+/* ---------- derived ---------- */
+const activeRes = ()=> state.residents.filter(r=>!r.archived);
+const byHouse = h => activeRes().filter(r=>r.house===h);
+function duePayments(horizon){
+  return activeRes().map(r=>Object.assign({},r,{bal:balance(r)}))
+    .filter(r=>r.bal!==null && r.bal<=(horizon===null?warnOf(r):horizon))
+    .sort((a,b)=>a.bal-b.bal);
+}
+function dueLeads(){
+  const t=todayISO();
+  return state.leads.filter(l=>l.remind && l.remind<=t && l.status!=="moved" && l.status!=="lost")
+    .map(l=>Object.assign({},l,{d:days(l.remind)})).sort((a,b)=>a.d-b.d);
+}
+const alarmCount = ()=> dueLeads().length + duePayments(0).length;
+
+/* ---------- render ---------- */
+function render(){
+  $("#today-label").textContent = fmtFull(todayISO());
+  $("#houses").innerHTML = Object.keys(HOUSES).map(h=>{
+    const c=byHouse(h).length;
+    return '<div class="house-pill"><span class="dot" style="background:var(--'+h+')"></span>'+
+      '<b>'+c+'</b><span>'+HOUSES[h].name+'</span></div>';
+  }).join("");
+  const n=alarmCount(), b=$("#tab-badge");
+  b.hidden = n===0; b.textContent=n;
+  document.querySelectorAll("#tabs button").forEach(x=>x.setAttribute("aria-selected", String(x.dataset.tab===state.tab)));
+  const v=$("#view");
+  if(!state.ready){ v.innerHTML='<div class="card"><div class="empty">Загрузка…</div></div>'; return; }
+  if(state.tab==="today") v.innerHTML=viewToday();
+  else if(state.tab==="leads") v.innerHTML=viewLeads();
+  else v.innerHTML=viewPeople();
+  const s=$("#search"); if(s){ s.value=state.q; }
+}
+
+function viewToday(){
+  const calls=dueLeads(), pays=duePayments(null);
+  let h="";
+  h+='<section class="block"><div class="block-head"><h2>Перезвонить</h2><span class="count">'+calls.length+'</span>'+
+     '<span class="sp"></span><button class="btn sm" data-act="new-lead">Новый лид</button></div>';
+  h+='<div class="card">';
+  h+= calls.length? calls.map(l=>{
+    const late=l.d<0;
+    return '<div class="row"><div class="main"><div class="name">'+esc(l.name||"Без имени")+
+      ' <span class="tag '+(late?"alert":"warn")+'">'+dueWord(l.d)+'</span>'+
+      ' <span class="tag '+LEAD_ST[l.status].cls+'">'+LEAD_ST[l.status].l+'</span></div>'+
+      '<div class="sub">'+(l.phone?esc(l.phone)+" · ":"")+esc(l.note||"без заметки")+'</div></div>'+
+      '<div class="acts">'+
+      '<button class="btn sm" data-act="snooze" data-id="'+l.id+'" data-n="1">+1 день</button>'+
+      '<button class="btn sm" data-act="done-lead" data-id="'+l.id+'">Дозвонился</button>'+
+      '<button class="btn sm primary" data-act="edit-lead" data-id="'+l.id+'">Открыть</button>'+
+      '</div></div>';
+  }).join("") : '<div class="empty"><b>Звонить некому</b>Все напоминания на сегодня закрыты.</div>';
+  h+='</div></section>';
+
+  const debt = pays.reduce((s,r)=>s+(r.bal<0?feeOf(r):0),0);
+  h+='<section class="block"><div class="block-head"><h2>Оплаты</h2><span class="count">'+pays.length+'</span>'+
+     (debt?'<span class="sp"></span><span class="tag alert">просрочено на '+money(debt)+' ₴</span>':"")+'</div>';
+  h+='<div class="card">';
+  h+= pays.length? pays.map(r=>{
+    return '<div class="row house-'+r.house+'"><div class="main"><div class="name">'+esc(r.name)+
+      ' <span class="tag '+HOUSES[r.house].cls+'">'+HOUSES[r.house].name+'</span>'+
+      ' <span class="tag '+balCls(r)+'">'+balText(r)+'</span></div>'+
+      '<div class="sub">'+money(feeOf(r))+' ₴/мес · срок '+fmt(nextPayOf(r))+
+      (r.contact?" · "+esc(r.contact):"")+(r.contactPhone?" · "+esc(r.contactPhone):"")+'</div></div>'+
+      '<div class="acts">'+
+      '<button class="btn sm primary" data-act="pay" data-id="'+r.id+'">Принять оплату</button>'+
+      '<button class="btn sm" data-act="edit-res" data-id="'+r.id+'">Открыть</button>'+
+      '</div></div>';
+  }).join("") : '<div class="empty"><b>Оплаты не горят</b>Ближайшие сроки ещё не подошли.</div>';
+  h+='</div></section>';
+  return h;
+}
+
+function viewLeads(){
+  const filters=[["all","Все"],["callback","Перезвонить"],["target","Целевой"],["nontarget","Нецелевой"],["moved","Заехал"],["lost","Отказ"]];
+  let list=state.leads.slice();
+  if(state.leadFilter!=="all") list=list.filter(l=>l.status===state.leadFilter);
+  if(state.q){ const q=state.q.toLowerCase(); list=list.filter(l=>((l.name||"")+" "+(l.phone||"")+" "+(l.note||"")).toLowerCase().includes(q)); }
+  list.sort((a,b)=>{
+    const ar=a.remind||"9999", br=b.remind||"9999";
+    if(ar!==br) return ar<br?-1:1;
+    return (b.created||"")<(a.created||"")?-1:1;
+  });
+  let h='<div class="filters">'+filters.map(f=>'<button class="chip" data-act="lead-filter" data-v="'+f[0]+'" aria-pressed="'+(state.leadFilter===f[0])+'">'+f[1]+
+    (f[0]==="all"?" "+state.leads.length:"")+'</button>').join("")+
+    '<input class="search" id="search" type="text" placeholder="Поиск по имени или телефону" data-act="search">'+
+    '<button class="btn primary" data-act="new-lead">Новый лид</button></div>';
+  h+='<div class="card">';
+  h+= list.length? list.map(l=>{
+    const d=l.remind?days(l.remind):null;
+    const rtag = l.remind? '<span class="tag '+(d<0?"alert":(d<=1?"warn":""))+'">'+fmt(l.remind)+(l.remindTime?" "+esc(l.remindTime):"")+'</span>':"";
+    return '<div class="row"><div class="main"><div class="name">'+esc(l.name||"Без имени")+
+      ' <span class="tag '+LEAD_ST[l.status].cls+'">'+LEAD_ST[l.status].l+'</span>'+rtag+'</div>'+
+      '<div class="sub">'+(l.phone?esc(l.phone)+" · ":"")+(l.source?esc(l.source)+" · ":"")+esc(l.note||"")+'</div></div>'+
+      '<div class="acts">'+
+      (l.status!=="moved"?'<button class="btn sm" data-act="to-resident" data-id="'+l.id+'">Заселить</button>':"")+
+      '<button class="btn sm" data-act="edit-lead" data-id="'+l.id+'">Открыть</button></div></div>';
+  }).join("") : '<div class="empty"><b>Здесь пока пусто</b>Добавьте первого лида с рекламы.</div>';
+  h+='</div>';
+  return h;
+}
+
+function viewPeople(){
+  const h0=state.house, list0=byHouse(h0);
+  let list=list0;
+  if(state.q){ const q=state.q.toLowerCase(); list=list.filter(r=>((r.name||"")+" "+(r.contact||"")+" "+(r.contactPhone||"")+" "+(r.note||"")).toLowerCase().includes(q)); }
+  list.sort((a,b)=>(nextPayOf(a)||"9999")<(nextPayOf(b)||"9999")?-1:1);
+  const perMonth=list0.reduce((s,r)=>s+feeOf(r),0);
+  const debt=list0.reduce((s,r)=>{const b=balance(r); return s+(b!==null&&b<0?feeOf(r):0);},0);
+  const archived=state.residents.filter(r=>r.archived && r.house===h0).length;
+
+  let h='<div class="filters">'+Object.keys(HOUSES).map(k=>
+    '<button class="chip" data-act="house" data-v="'+k+'" aria-pressed="'+(h0===k)+'">'+HOUSES[k].name+" "+byHouse(k).length+'</button>').join("")+
+    '<input class="search" id="search" type="text" placeholder="Поиск по имени" data-act="search">'+
+    '<button class="btn primary" data-act="new-res">Заселить</button></div>';
+  h+='<div class="sum-line"><span>Проживает: <b>'+list0.length+'</b></span>'+
+     '<span>Ожидаемо в месяц: <b>'+money(perMonth)+' ₴</b></span>'+
+     (debt?'<span>Просрочено: <b style="color:var(--alert)">'+money(debt)+' ₴</b></span>':"")+
+     (archived?'<span><button class="btn sm ghost" data-act="show-archive">Выписанные: '+archived+'</button></span>':"")+'</div>';
+  h+='<div class="card">';
+  h+= list.length? list.map(r=>{
+    return '<div class="row house-'+r.house+'"><div class="main"><div class="name">'+esc(r.name)+
+      (r.room?' <span class="tag">комната '+esc(r.room)+'</span>':"")+
+      ' <span class="tag '+balCls(r)+'">'+balText(r)+'</span></div>'+
+      '<div class="sub">'+money(feeOf(r))+' ₴/мес'+(nextPayOf(r)?" · срок "+fmt(nextPayOf(r)):"")+
+      (r.contact?" · "+esc(r.contact):"")+(r.contactPhone?" · "+esc(r.contactPhone):"")+
+      (r.since?" · с "+fmt(r.since):"")+'</div></div>'+
+      '<div class="acts"><button class="btn sm" data-act="pay" data-id="'+r.id+'">Принять оплату</button>'+
+      '<button class="btn sm" data-act="edit-res" data-id="'+r.id+'">Открыть</button></div></div>';
+  }).join("") : '<div class="empty"><b>В пансионате «'+HOUSES[h0].name+'» никого нет</b>Нажмите «Заселить», чтобы добавить первого жильца.</div>';
+  h+='</div>';
+  return h;
+}
+
+/* ---------- modals ---------- */
+const modal=$("#modal"), mbody=$("#modal-body");
+function openModal(html){ mbody.innerHTML=html; if(!modal.open) modal.showModal(); }
+function closeModal(){ modal.close(); }
+
+function leadForm(l){
+  const isNew=!l;
+  l = l || {id:uid(),name:"",phone:"",source:"Instagram",status:"new",remind:"",remindTime:"",note:"",created:new Date().toISOString()};
+  const st=Object.keys(LEAD_ST).map(k=>'<button type="button" class="chip" data-f="status" data-v="'+k+'" aria-pressed="'+(l.status===k)+'">'+LEAD_ST[k].l+'</button>').join("");
+  openModal(
+   '<h3>'+(isNew?"Новый лид":"Лид")+'</h3>'+
+   '<form id="f" data-kind="lead" data-id="'+l.id+'">'+
+   '<div class="grid2">'+
+     '<div class="field"><label for="l-name">Имя и фамилия</label><input id="l-name" name="name" type="text" value="'+esc(l.name)+'" required></div>'+
+     '<div class="field"><label for="l-phone">Телефон</label><input id="l-phone" name="phone" type="tel" value="'+esc(l.phone)+'"></div>'+
+   '</div>'+
+   '<div class="field"><label>Статус</label><div class="chips" id="st">'+st+'</div><input type="hidden" name="status" value="'+l.status+'"></div>'+
+   '<div class="grid2">'+
+     '<div class="field"><label for="l-remind">Напомнить</label><input id="l-remind" name="remind" type="date" value="'+esc(l.remind)+'">'+
+       '<div class="chips" style="margin-top:6px"><button type="button" class="chip" data-quick="0">сегодня</button>'+
+       '<button type="button" class="chip" data-quick="1">завтра</button><button type="button" class="chip" data-quick="3">+3 дня</button>'+
+       '<button type="button" class="chip" data-quick="7">+неделя</button><button type="button" class="chip" data-quick="-1">убрать</button></div></div>'+
+     '<div class="field"><label for="l-time">Во сколько</label><input id="l-time" name="remindTime" type="time" value="'+esc(l.remindTime||"")+'">'+
+       '<label for="l-source" style="margin-top:8px">Источник</label><input id="l-source" name="source" type="text" value="'+esc(l.source||"")+'"></div>'+
+   '</div>'+
+   '<div class="field"><label for="l-note">Заметка</label><textarea id="l-note" name="note">'+esc(l.note||"")+'</textarea></div>'+
+   '<div class="sheet-foot">'+
+     (isNew?"":'<button type="button" class="btn danger left" data-act="del-lead" data-id="'+l.id+'">Удалить</button>')+
+     '<button type="button" class="btn" data-act="close">Отмена</button>'+
+     '<button type="submit" class="btn primary">Сохранить</button>'+
+   '</div></form>');
+  mbody.querySelector("#l-name").focus();
+}
+
+function resForm(r,presetHouse){
+  const isNew=!r;
+  r = r || {id:uid(),name:"",house:presetHouse||state.house,room:"",contact:"",contactPhone:"",fee:0,warnDays:3,
+            since:todayISO(),nextPay:isoPlus(30),note:"",archived:false,history:[]};
+  const hs=Object.keys(HOUSES).map(k=>'<button type="button" class="chip" data-f="house" data-v="'+k+'" aria-pressed="'+(r.house===k)+'">'+HOUSES[k].name+'</button>').join("");
+  const hist=(r.history||[]).slice(-6).reverse().map(p=>'<div class="sub">'+fmtFull(p.date)+' — '+money(p.amount)+' ₴'+(p.until?' · до '+fmt(p.until):"")+'</div>').join("")||'<div class="sub">оплат пока нет</div>';
+  openModal(
+   '<h3>'+(isNew?"Заселить жильца":"Жилец")+'</h3>'+
+   '<form id="f" data-kind="res" data-id="'+r.id+'">'+
+   '<div class="field"><label for="r-name">Имя и фамилия</label><input id="r-name" name="name" type="text" value="'+esc(r.name)+'" required></div>'+
+   '<div class="field"><label>Пансионат</label><div class="chips" id="hs">'+hs+'</div><input type="hidden" name="house" value="'+r.house+'"></div>'+
+   '<div class="grid2">'+
+     '<div class="field"><label for="r-room">Комната</label><input id="r-room" name="room" type="text" value="'+esc(r.room||"")+'"></div>'+
+     '<div class="field"><label for="r-fee">Оплата в месяц, ₴</label><input id="r-fee" name="fee" type="number" min="0" step="100" value="'+feeOf(r)+'"></div>'+
+   '</div>'+
+   '<div class="grid2">'+
+     '<div class="field"><label for="r-contact">Контактное лицо</label><input id="r-contact" name="contact" type="text" value="'+esc(r.contact||"")+'"></div>'+
+     '<div class="field"><label for="r-cphone">Телефон родственника</label><input id="r-cphone" name="contactPhone" type="tel" value="'+esc(r.contactPhone||"")+'"></div>'+
+   '</div>'+
+   '<div class="grid2">'+
+     '<div class="field"><label for="r-since">Заехал</label><input id="r-since" name="since" type="date" value="'+esc(r.since||"")+'"></div>'+
+     '<div class="field"><label for="r-next">Дата следующей оплаты</label><input id="r-next" name="nextPay" type="date" value="'+esc(nextPayOf(r))+'"></div>'+
+   '</div>'+
+   '<div class="grid2">'+
+     '<div class="field"><label for="r-warn">Напомнить за, дней</label><input id="r-warn" name="warnDays" type="number" min="0" max="30" step="1" value="'+warnOf(r)+'"></div>'+
+     '<div class="field"><label>Сейчас</label><div class="sub" style="padding-top:9px">'+balText(r)+'</div></div>'+
+   '</div>'+
+   '<div class="field"><label for="r-note">Заметка</label><textarea id="r-note" name="note">'+esc(r.note||"")+'</textarea></div>'+
+   (isNew?"":'<div class="field"><label>Последние оплаты</label>'+hist+'</div>')+
+   '<div class="sheet-foot">'+
+     (isNew?"":'<button type="button" class="btn danger left" data-act="archive-res" data-id="'+r.id+'">'+(r.archived?"Вернуть":"Выписать")+'</button>')+
+     '<button type="button" class="btn" data-act="close">Отмена</button>'+
+     '<button type="submit" class="btn primary">Сохранить</button>'+
+   '</div></form>');
+  mbody.querySelector("#r-name").focus();
+}
+
+let payCtx=null;
+function payForm(r){
+  const fee=feeOf(r), base=nextPayOf(r)||todayISO(), b=balance(r);
+  payCtx={base:base, months:1};
+  openModal(
+   '<h3>Оплата — '+esc(r.name)+'</h3>'+
+   '<div class="sub" style="margin:-8px 0 14px">'+money(fee)+' ₴/мес · срок '+fmtFull(base)+' · '+balText(r)+'</div>'+
+   '<form id="f" data-kind="pay" data-id="'+r.id+'">'+
+   '<div class="grid2">'+
+     '<div class="field"><label for="pay-sum">Сумма, ₴</label><input id="pay-sum" name="amount" type="number" min="0" step="100" value="'+fee+'" required></div>'+
+     '<div class="field"><label for="pay-date">Дата платежа</label><input id="pay-date" name="date" type="date" value="'+todayISO()+'"></div>'+
+   '</div>'+
+   '<div class="field"><label>Оплатили вперёд</label><div class="chips" id="pay-months">'+
+     [1,2,3].map(n=>'<button type="button" class="chip" data-paym="'+n+'" aria-pressed="'+(n===1)+'">'+n+' '+plural(n,["месяц","месяца","месяцев"])+'</button>').join("")+
+   '</div></div>'+
+   '<div class="field"><label for="pay-next">Следующая оплата</label><input id="pay-next" name="nextPay" type="date" value="'+addMonths(base,1)+'">'+
+     '<div class="sub" style="margin-top:4px">Дату можно поправить вручную — напоминание придёт по ней.</div></div>'+
+   '<div class="sheet-foot"><button type="button" class="btn" data-act="close">Отмена</button>'+
+   '<button type="submit" class="btn primary">Записать оплату</button></div></form>');
+  mbody.querySelector("#pay-sum").focus();
+}
+function setPayMonths(n){
+  if(!payCtx) return;
+  payCtx.months=n;
+  const nx=mbody.querySelector("#pay-next"); if(nx) nx.value=addMonths(payCtx.base,n);
+  mbody.querySelectorAll("[data-paym]").forEach(c=>c.setAttribute("aria-pressed", String(Number(c.dataset.paym)===n)));
+}
+
+function archiveList(){
+  const list=state.residents.filter(r=>r.archived);
+  openModal('<h3>Выписанные</h3><div class="card">'+
+    (list.length?list.map(r=>'<div class="row house-'+r.house+'"><div class="main"><div class="name">'+esc(r.name)+
+      ' <span class="tag '+HOUSES[r.house].cls+'">'+HOUSES[r.house].name+'</span></div><div class="sub">'+esc(r.note||"")+'</div></div>'+
+      '<div class="acts"><button class="btn sm" data-act="edit-res" data-id="'+r.id+'">Открыть</button></div></div>').join("")
+     :'<div class="empty">Пока никого</div>')+
+    '</div><div class="sheet-foot"><button type="button" class="btn" data-act="close">Закрыть</button></div>');
+}
+
+/* ---------- alarm popup ---------- */
+function maybeAlarm(){
+  if(alarmShown||!state.ready) return;
+  const calls=dueLeads(), pays=duePayments(0);
+  if(!calls.length && !pays.length) return;
+  alarmShown=true;
+  const ab=$("#alarm-body");
+  ab.innerHTML='<h3>На сегодня — '+(calls.length+pays.length)+" "+plural(calls.length+pays.length,["задача","задачи","задач"])+'</h3>'+
+    (calls.length?'<div class="block-head"><h2>Перезвонить</h2></div><div class="card">'+calls.map(l=>
+      '<div class="row"><div class="main"><div class="name">'+esc(l.name||"Без имени")+'</div><div class="sub">'+(l.phone?esc(l.phone)+" · ":"")+dueWord(l.d)+'</div></div></div>').join("")+'</div>':"")+
+    (pays.length?'<div class="block-head" style="margin-top:14px"><h2>Оплаты</h2></div><div class="card">'+pays.map(r=>
+      '<div class="row house-'+r.house+'"><div class="main"><div class="name">'+esc(r.name)+'</div><div class="sub">'+HOUSES[r.house].name+" · "+money(feeOf(r))+' ₴/мес · '+balText(r)+'</div></div></div>').join("")+'</div>':"")+
+    '<div class="sheet-foot"><button class="btn primary" data-act="close-alarm">Открыть список</button></div>';
+  $("#alarm").showModal();
+}
+
+/* ---------- actions ---------- */
+document.addEventListener("click", async e=>{
+  const t=e.target.closest("[data-act],[data-quick],[data-f],[data-tab]");
+  if(!t) return;
+
+  if(t.dataset.tab){ state.tab=t.dataset.tab; state.q=""; render(); return; }
+  if(t.dataset.paym!==undefined){ setPayMonths(Number(t.dataset.paym)); return; }
+  if(t.dataset.quick!==undefined){
+    const inp=mbody.querySelector("#l-remind");
+    inp.value = t.dataset.quick==="-1"? "" : isoPlus(Number(t.dataset.quick));
+    return;
+  }
+  if(t.dataset.f){
+    const group=t.parentElement;
+    group.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed", String(c===t)));
+    group.parentElement.querySelector('input[type=hidden]').value=t.dataset.v;
+    return;
+  }
+
+  const id=t.dataset.id, act=t.dataset.act;
+  if(act==="logout"){ await sb.auth.signOut(); location.reload(); return; }
+  if(act==="close"){ closeModal(); return; }
+  if(act==="close-alarm"){ $("#alarm").close(); state.tab="today"; render(); return; }
+  if(act==="house"){ state.house=t.dataset.v; render(); return; }
+  if(act==="lead-filter"){ state.leadFilter=t.dataset.v; render(); return; }
+  if(act==="new-lead"){ leadForm(null); return; }
+  if(act==="new-res"){ resForm(null,state.house); return; }
+  if(act==="show-archive"){ archiveList(); return; }
+  if(act==="edit-lead"){ const l=state.leads.find(x=>x.id===id); if(l) leadForm(l); return; }
+  if(act==="edit-res"){ const r=state.residents.find(x=>x.id===id); if(r) resForm(r); return; }
+  if(act==="del-lead"){ if(confirm("Удалить лида без возврата?")){ await delDoc("leads",id); closeModal(); } return; }
+
+  if(act==="snooze"){
+    const l=state.leads.find(x=>x.id===id); if(!l) return;
+    const base = l.remind && days(l.remind)>0 ? l.remind : todayISO();
+    const d=new Date(base+"T00:00:00"); d.setDate(d.getDate()+Number(t.dataset.n||1));
+    await saveDoc("leads", Object.assign({},l,{remind:d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}));
+    return;
+  }
+  if(act==="done-lead"){
+    const l=state.leads.find(x=>x.id===id); if(!l) return;
+    await saveDoc("leads", Object.assign({},l,{remind:"",remindTime:""}));
+    return;
+  }
+  if(act==="to-resident"){
+    const l=state.leads.find(x=>x.id===id); if(!l) return;
+    await saveDoc("leads", Object.assign({},l,{status:"moved",remind:"",remindTime:""}));
+    resForm({id:uid(),name:l.name,house:state.house,room:"",contact:"",contactPhone:l.phone||"",fee:0,
+             since:todayISO(),nextPay:isoPlus(30),note:l.note||"",archived:false,history:[]});
+    return;
+  }
+  if(act==="pay"){
+    const r=state.residents.find(x=>x.id===id); if(r) payForm(r);
+    return;
+  }
+  if(act==="archive-res"){
+    const r=state.residents.find(x=>x.id===id); if(!r) return;
+    await saveDoc("residents", Object.assign({},r,{archived:!r.archived}));
+    closeModal(); return;
+  }
+});
+
+document.addEventListener("input", e=>{
+  if(e.target.dataset && e.target.dataset.act==="search"){ state.q=e.target.value; const p=e.target.selectionStart; render(); const s=$("#search"); if(s){s.focus(); try{s.setSelectionRange(p,p);}catch(_){}} }
+});
+
+document.addEventListener("submit", async e=>{
+  const f=e.target; if(f.id!=="f") return;
+  e.preventDefault();
+  const fd=Object.fromEntries(new FormData(f).entries());
+  const id=f.dataset.id;
+  if(f.dataset.kind==="lead"){
+    const prev=state.leads.find(x=>x.id===id)||{created:new Date().toISOString()};
+    await saveDoc("leads", Object.assign({},prev,fd,{id:id}));
+  }else if(f.dataset.kind==="pay"){
+    const r=state.residents.find(x=>x.id===id); if(!r){ closeModal(); return; }
+    const amount=Math.round(Number(fd.amount)||feeOf(r));
+    const next=fd.nextPay||addMonths(nextPayOf(r)||todayISO(),1);
+    const hist=(r.history||[]).concat([{date:fd.date||todayISO(),amount:amount,until:next}]).slice(-36);
+    await saveDoc("residents", Object.assign({},r,{nextPay:next,paidUntil:null,history:hist,lastPaid:fd.date||todayISO()}));
+  }else{
+    const prev=state.residents.find(x=>x.id===id)||{archived:false,history:[]};
+    fd.fee=Number(fd.fee)||0;
+    fd.warnDays=Number(fd.warnDays)||3;
+    delete fd.rate; delete fd.paidUntil;
+    await saveDoc("residents", Object.assign({},prev,fd,{id:id}));
+  }
+  closeModal();
+});
+
+/* ---------- go ---------- */
+render();
+})();
+</script>
+</body>
+</html>
