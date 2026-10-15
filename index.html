@@ -591,8 +591,8 @@ function dateOfPeriod(p,day){
 function periodLabel(p){ const a=p.split("-").map(Number); return MONTHS_FULL[a[1]-1]+" "+a[0]; }
 function duePeriod(r){
   if(r.paidThrough) return nextPeriod(r.paidThrough);
-  const base=(r.nextPay||r.since||todayISO()).slice(0,7);
-  return base;
+  // No payment recorded — start reminders from current month
+  return curPeriod();
 }
 function nextPayOf(r){ return dateOfPeriod(duePeriod(r), payDayOf(r)); }
 function balance(r){ const pu=nextPayOf(r); return pu?days(pu):null; }
@@ -896,7 +896,7 @@ function render(){
 }
 
 function viewToday(){
-  const calls=dueLeads(), pays=duePayments(null);
+  const calls=dueLeads(), pays=duePayments(0);
   let h="";
   h+='<section class="block"><div class="block-head"><h2>📞 Перезвонить</h2><span class="count">'+calls.length+'</span>'+
      '<span class="sp"></span><button class="btn sm" data-act="new-lead">➕ Новый лид</button></div>';
@@ -1177,8 +1177,8 @@ function callForm(l){
 function resForm(r,presetHouse){
   const isNew=!r;
   r = r || {id:uid(),name:"",house:(presetHouse||state.house)==="all"?"sofia":(presetHouse||state.house),room:"",contact:"",contactPhone:"",fee:0,warnDays:3,
-            payDay:Number(todayISO().split("-")[2]), paidThrough:"",
-            since:todayISO(),nextPay:"",note:"",archived:false,history:[]};
+            payDay:"", paidThrough:"",
+            since:"",nextPay:"",note:"",archived:false,history:[]};
   const hs=Object.keys(HOUSES).map(k=>'<button type="button" class="chip" data-f="house" data-v="'+k+'" aria-pressed="'+(r.house===k)+'">'+HOUSES[k].name+'</button>').join("");
   const hist=(r.history||[]).slice(-6).reverse().map(p=>'<div class="sub">'+fmtFull(p.date)+' — '+money(p.amount)+' ₴'+(p.period?' · за '+periodLabel(p.period):"")+'</div>').join("")||'<div class="sub">оплат пока нет</div>';
   openModal(
@@ -1199,11 +1199,8 @@ function resForm(r,presetHouse){
      '<div class="field"><label for="r-payday">Платит каждого числа</label><input id="r-payday" name="payDay" type="number" min="1" max="31" step="1" inputmode="numeric" enterkeyhint="next" value="'+payDayOf(r)+'">'+
        '<div class="sub" style="margin-top:4px">Напоминание повторяется каждый месяц. 31 в коротком месяце — последний день.</div></div>'+
    '</div>'+
-   '<div class="grid2">'+
-     '<div class="field"><label for="r-warn">Напомнить за, дней</label><input id="r-warn" name="warnDays" type="number" min="0" max="30" step="1" inputmode="numeric" enterkeyhint="done" value="'+warnOf(r)+'"></div>'+
-     '<div class="field"><label>Ближайшая оплата</label><div class="sub" style="padding-top:9px">'+
+   '<div class="field"><label>Ближайшая оплата</label><div class="sub" style="padding-top:9px">'+
        fmtFull(nextPayOf(r))+' — за '+periodLabel(duePeriod(r))+'<br>'+balText(r)+'</div></div>'+
-   '</div>'+
    '<div class="field"><label for="r-note">Заметка</label><textarea id="r-note" name="note" autocapitalize="sentences">'+esc(r.note||"")+'</textarea></div>'+
    (isNew?"":'<div class="field"><label>Последние оплаты</label>'+hist+'</div>')+
    '<div class="sheet-foot">'+
