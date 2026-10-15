@@ -514,9 +514,9 @@ button,.chip,.btn,nav.tabs button{-webkit-tap-highlight-color:transparent}
 
   <nav class="tabs" role="tablist" id="tabs">
     <button role="tab" data-tab="today" aria-selected="true"><span class="ico">🗓️</span><span class="lbl">Сегодня</span><span class="badge" id="tab-badge" hidden>0</span></button>
-    <button role="tab" data-tab="leads" aria-selected="false"><span class="ico">📞</span><span class="lbl">Лиды</span></button>
     <button role="tab" data-tab="people" aria-selected="false"><span class="ico">🏡</span><span class="lbl">Жильцы</span></button>
     <button role="tab" data-tab="calendar" aria-selected="false"><span class="ico">💰</span><span class="lbl">Календарь</span></button>
+    <button role="tab" data-tab="leads" aria-selected="false"><span class="ico">📞</span><span class="lbl">Лиды</span></button>
   </nav>
 
   <main id="view"></main>
@@ -591,7 +591,6 @@ function dateOfPeriod(p,day){
 function periodLabel(p){ const a=p.split("-").map(Number); return MONTHS_FULL[a[1]-1]+" "+a[0]; }
 function duePeriod(r){
   if(r.paidThrough) return nextPeriod(r.paidThrough);
-  // No payment recorded — start reminders from current month
   return curPeriod();
 }
 function nextPayOf(r){ return dateOfPeriod(duePeriod(r), payDayOf(r)); }
@@ -606,10 +605,13 @@ function balText(r){
   return "оплата через "+b+" "+plural(b,["день","дня","дней"]);
 }
 function dateBox(r,paid){
-  const iso=nextPayOf(r), b=balance(r);
-  const cls = paid? "paid" : (b===null? "" : (b<0? "od" : (b<=warnOf(r)? "soon" : "")));
-  const p=iso.split("-");
-  return '<div class="datebox '+cls+'" title="'+fmtFull(iso)+'"><b>'+Number(p[2])+'</b><span>'+MONTHS[Number(p[1])-1]+'</span></div>';
+  const b=balance(r);
+  const cls = paid? "paid" : (b===null? "" : (b<0? "od" : (b===0? "soon" : "")));
+  // Always show payDay of current month
+  const today=new Date(), day=payDayOf(r);
+  const month=MONTHS[today.getMonth()];
+  const isoFull=today.getFullYear()+"-"+pad(today.getMonth()+1)+"-"+pad(Math.min(day,new Date(today.getFullYear(),today.getMonth()+1,0).getDate()));
+  return '<div class="datebox '+cls+'" title="'+day+'-е каждого месяца'+'"><b>'+day+'</b><span>'+month+'</span></div>';
 }
 function balCls(r){ const b=balance(r); if(b===null) return ""; if(b<0) return "alert"; if(b<=warnOf(r)) return "warn"; return ""; }
 
