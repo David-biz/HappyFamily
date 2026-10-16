@@ -513,10 +513,10 @@ button,.chip,.btn,nav.tabs button{-webkit-tap-highlight-color:transparent}
   </header>
 
   <nav class="tabs" role="tablist" id="tabs">
-    <button role="tab" data-tab="today" aria-selected="true"><span class="ico">🗓️</span><span class="lbl">Сегодня</span><span class="badge" id="tab-badge" hidden>0</span></button>
+    <button role="tab" data-tab="calendar" aria-selected="true"><span class="ico">💰</span><span class="lbl">Календарь</span></button>
     <button role="tab" data-tab="people" aria-selected="false"><span class="ico">🏡</span><span class="lbl">Жильцы</span></button>
-    <button role="tab" data-tab="calendar" aria-selected="false"><span class="ico">💰</span><span class="lbl">Календарь</span></button>
-    <button role="tab" data-tab="leads" aria-selected="false"><span class="ico">📞</span><span class="lbl">Лиды</span></button>
+    <button role="tab" data-tab="today" aria-selected="false" style="display:none"><span class="ico">🗓️</span><span class="lbl">Сегодня</span><span class="badge" id="tab-badge" hidden>0</span></button>
+    <button role="tab" data-tab="leads" aria-selected="false" style="display:none"><span class="ico">📞</span><span class="lbl">Лиды</span></button>
   </nav>
 
   <main id="view"></main>
@@ -556,7 +556,7 @@ function addMonths(iso,n){
 }
 function dueWord(n){
   if(n===null) return "";
-  if(n<0) return "просрочено "+Math.abs(n)+" "+plural(Math.abs(n),["день","дня","дней"]);
+  if(n<0) return "нагадування "+Math.abs(n)+" "+plural(Math.abs(n),["день","дня","дней"])+" тому";
   if(n===0) return "сегодня";
   if(n===1) return "завтра";
   return "через "+n+" "+plural(n,["день","дня","дней"]);
@@ -590,7 +590,11 @@ function dateOfPeriod(p,day){
 }
 function periodLabel(p){ const a=p.split("-").map(Number); return MONTHS_FULL[a[1]-1]+" "+a[0]; }
 function duePeriod(r){
-  if(r.paidThrough) return nextPeriod(r.paidThrough);
+  if(r.paidThrough){
+    const np=nextPeriod(r.paidThrough);
+    // Cap: never show debt older than current month
+    return np < curPeriod() ? curPeriod() : np;
+  }
   return curPeriod();
 }
 function nextPayOf(r){ return dateOfPeriod(duePeriod(r), payDayOf(r)); }
@@ -598,22 +602,21 @@ function balance(r){ const pu=nextPayOf(r); return pu?days(pu):null; }
 function warnOf(r){ const n=Number(r.warnDays); return n>0?n:3; }
 function balText(r){
   const b=balance(r); if(b===null) return "дата оплаты не задана";
-  if(b<-40) return "не оплачено с "+periodLabel(duePeriod(r));
-  if(b<0) return "просрочено "+Math.abs(b)+" "+plural(Math.abs(b),["день","дня","дней"]);
+  if(b<0) return "оплата "+periodLabel(duePeriod(r));
   if(b===0) return "оплата сегодня";
   if(b===1) return "оплата завтра";
   return "оплата через "+b+" "+plural(b,["день","дня","дней"]);
 }
 function dateBox(r,paid){
   const b=balance(r);
-  const cls = paid? "paid" : (b===null? "" : (b<0? "od" : (b===0? "soon" : "")));
+  const cls = paid? "paid" : (b===null? "" : (b===0? "od" : (b<0? "soon" : "")));
   // Always show payDay of current month
   const today=new Date(), day=payDayOf(r);
   const month=MONTHS[today.getMonth()];
   const isoFull=today.getFullYear()+"-"+pad(today.getMonth()+1)+"-"+pad(Math.min(day,new Date(today.getFullYear(),today.getMonth()+1,0).getDate()));
   return '<div class="datebox '+cls+'" title="'+day+'-е каждого месяца'+'"><b>'+day+'</b><span>'+month+'</span></div>';
 }
-function balCls(r){ const b=balance(r); if(b===null) return ""; if(b<0) return "alert"; if(b<=warnOf(r)) return "warn"; return ""; }
+function balCls(r){ const b=balance(r); if(b===null) return ""; if(b<0) return "warn"; if(b===0) return "alert"; return ""; }
 
 const HOUSES={sofia:{name:"София",cls:"sofia"},vita:{name:"Вита",cls:"vita"}};
 const LEAD_ST={
@@ -626,7 +629,7 @@ const LEAD_ST={
 };
 
 /* ---------- state ---------- */
-const state={animate:true,tab:"today",house:"sofia",leadFilter:"all",q:"",residents:[],leads:[],mode:"local",ready:false};
+const state={animate:true,tab:"calendar",house:"sofia",leadFilter:"all",q:"",residents:[],leads:[],mode:"local",ready:false};
 let db=null, alarmShown=false;
 
 
@@ -857,7 +860,12 @@ const activeRes = ()=> state.residents.filter(r=>!r.archived);
 const byHouse = h => activeRes().filter(r=>r.house===h);
 function duePayments(horizon){
   return activeRes().map(r=>Object.assign({},r,{bal:balance(r)}))
-    .filter(r=>r.bal!==null && r.bal<=(horizon===null?warnOf(r):horizon))
+    .filter(r=>{
+      if(r.bal===null) return false;
+      const h = horizon===null ? 0 : horizon;
+      // Show only current month (overdue or today) and next month (up to ~45 days)
+      return r.bal <= 45;
+    })
     .sort((a,b)=>a.bal-b.bal);
 }
 function dueLeads(){
@@ -871,7 +879,7 @@ const alarmCount = ()=> dueLeads().length + duePayments(0).length;
 function render(){
   $("#today-label").textContent = "🌞 " + fmtFull(todayISO());
   const fab=$("#fab");
-  if(fab){ const toPeople = state.tab==="people"||state.tab==="calendar";
+  if(fab){ const toPeople = state.tab==="people"||state.tab==="calendar"||state.tab==="today";
     fab.dataset.act = toPeople?"new-res":"new-lead";
     fab.setAttribute("aria-label", toPeople?"Заселить жильца":"Новый лид"); }
   const sb2=$("#sound-btn"); if(sb2) sb2.textContent=SND.on?"🔊":"🔇";
@@ -919,7 +927,7 @@ function viewToday(){
 
   const debt = pays.reduce((s,r)=>s+(r.bal<0?feeOf(r):0),0);
   h+='<section class="block"><div class="block-head"><h2>💰 Оплаты</h2><span class="count">'+pays.length+'</span>'+
-     (debt?'<span class="sp"></span><span class="tag alert">просрочено на '+money(debt)+' ₴</span>':"")+'</div>';
+     (debt?'<span class="sp"></span><span class="tag alert">до сплати: '+money(debt)+' ₴</span>':"")+'</div>';
   h+='<div class="card">';
   h+= pays.length? pays.map(r=>{
     return '<div class="row house-'+r.house+'">'+dateBox(r)+'<div class="main"><div class="name">'+esc(r.name)+
